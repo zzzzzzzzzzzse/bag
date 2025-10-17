@@ -6,6 +6,9 @@ using static ChosTIS.Utilities;
 
 namespace ChosTIS
 {
+    /// <summary>
+    /// 物品拖拽时的幽灵预览体：负责可视化、拖拽交互、放置状态判定与最终应用。
+    /// </summary>
     public class TetrisItemGhost : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler, IPointerDownHandler, ITetrisRotatable
     {
         //Private fields
@@ -68,6 +71,10 @@ namespace ChosTIS
 
         }
 
+        /// <summary>
+        /// 开始拖拽幽灵体：禁用射线阻挡、加深透明度并缓存源物品与幽灵状态。
+        /// </summary>
+        /// <param name="eventData">指针事件数据。</param>
         public void OnBeginDrag(PointerEventData eventData)
         {
             if (eventData.button != PointerEventData.InputButton.Left) return;
@@ -81,6 +88,10 @@ namespace ChosTIS
 
         }
 
+        /// <summary>
+        /// 拖拽过程中根据屏幕坐标更新幽灵体的局部位置。
+        /// </summary>
+        /// <param name="eventData">指针事件数据。</param>
         public void OnDrag(PointerEventData eventData)
         {
             if (eventData.button != PointerEventData.InputButton.Left) return;
@@ -97,6 +108,10 @@ namespace ChosTIS
             }
         }
 
+        /// <summary>
+        /// 结束拖拽：恢复射线阻挡、隐藏幽灵体并触发放置状态更新。
+        /// </summary>
+        /// <param name="eventData">指针事件数据。</param>
         public void OnEndDrag(PointerEventData eventData)
         {
             canvasGroup.blocksRaycasts = true;
@@ -106,6 +121,9 @@ namespace ChosTIS
             UpdatePlaceState();
         }
 
+        /// <summary>
+        /// 旋转幽灵体：更新方向、旋转偏移与形状点集，并同步中介器缓存。
+        /// </summary>
         public void Rotate()
         {
             Dir = Utilities.RotationHelper.GetNextDir(Dir);
@@ -116,6 +134,10 @@ namespace ChosTIS
             transform.rotation = Quaternion.Euler(0, 0, -Utilities.RotationHelper.GetRotationAngle(Dir));
         }
 
+        /// <summary>
+        /// 拖拽开始的业务处理：根据射线命中移除源格子或槽位中的物品。
+        /// </summary>
+        /// <param name="eventData">指针事件数据。</param>
         private void OnBeginAction(PointerEventData eventData)
         {
             var results = new List<RaycastResult>();
@@ -206,33 +228,35 @@ namespace ChosTIS
             }
         }
 
+        /// <summary>
+        /// 根据当前放置状态枚举执行具体落点逻辑（叠加、落格、落槽、重置）。
+        /// </summary>
         private void UpdatePlaceState()
         {
             switch (PlaceState)
             {
                 case PlaceState.OnGridHasItem:
                     PlaceOnOverlapItem(selectedTetrisItem);
-                    //Debug.Log("A");
                     break;
                 case PlaceState.OnSlotHasItem:
                     ResetState(selectedTetrisItem);
-                    //Debug.Log("B");
                     break;
                 case PlaceState.OnGridNoItem:
                     PlaceOnGrid(selectedTetrisItem);
-                    //Debug.Log("C");
                     break;
                 case PlaceState.OnSlotNoItem:
                     PlaceOnSlot(selectedTetrisItem);
-                    //Debug.Log("D");
                     break;
                 case PlaceState.InvalidPos:
                     ResetState(selectedTetrisItem);
-                    //Debug.Log("E");
                     break;
             }
         }
 
+        /// <summary>
+        /// 将物品落到目标网格：同步中介器状态、调用放置接口并更新位置与存档。
+        /// </summary>
+        /// <param name="selectedTetrisItem">被拖拽的源物品。</param>
         private void PlaceOnGrid(TetrisItem selectedTetrisItem)
         {
             TetrisItemMediator.Instance.ApplyStateToItem(selectedTetrisItem);
@@ -246,6 +270,10 @@ namespace ChosTIS
             selectedTetrisItem.SetItemData(selectedTetrisItem.GetInstanceID());
         }
 
+        /// <summary>
+        /// 将物品落到槽位：移除原容器并调用槽位放置，更新位置与存档。
+        /// </summary>
+        /// <param name="selectedTetrisItem">被拖拽的源物品。</param>
         private void PlaceOnSlot(TetrisItem selectedTetrisItem)
         {
             TetrisItemMediator.Instance.ApplyStateToItem(selectedTetrisItem);

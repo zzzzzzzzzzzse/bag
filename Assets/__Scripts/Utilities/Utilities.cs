@@ -4,12 +4,25 @@ using UnityEngine.EventSystems;
 
 namespace ChosTIS
 {
+    /// <summary>
+    /// 工具类集合
+    /// 包含旋转计算、对象管理和物品操作等静态工具方法
+    /// </summary>
     public static class Utilities
     {
         #region Rotation Methods
 
+        /// <summary>
+        /// 旋转计算辅助类
+        /// 提供物品旋转相关的计算方法
+        /// </summary>
         public static class RotationHelper
         {
+            /// <summary>
+            /// 获取下一个旋转方向
+            /// </summary>
+            /// <param name="dir">当前方向</param>
+            /// <returns>下一个方向</returns>
             public static Dir GetNextDir(Dir dir)
             {
                 return dir switch
@@ -22,6 +35,11 @@ namespace ChosTIS
                 };
             }
 
+            /// <summary>
+            /// 获取旋转角度
+            /// </summary>
+            /// <param name="dir">方向</param>
+            /// <returns>角度值</returns>
             public static int GetRotationAngle(Dir dir)
             {
                 return dir switch
@@ -34,7 +52,11 @@ namespace ChosTIS
                 };
             }
 
-            // Rotate clockwise 90 degrees
+            /// <summary>
+            /// 顺时针旋转90度
+            /// </summary>
+            /// <param name="points">原始点位列表</param>
+            /// <returns>旋转后的点位列表</returns>
             public static List<Vector2Int> RotatePointsClockwise(List<Vector2Int> points)
             {
                 List<Vector2Int> rotatedPoints = new();

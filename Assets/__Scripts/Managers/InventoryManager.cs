@@ -6,6 +6,9 @@ using UnityEngine.UI;
 
 namespace ChosTIS
 {
+    /// <summary>
+    /// 背包系统的核心管理器：维护当前选中网格与物品，处理高亮、预览与程序化放置。
+    /// </summary>
     public class InventoryManager : Singleton<InventoryManager>
     {
         [Header("Current Tetris Item Grid")]
@@ -81,10 +84,10 @@ namespace ChosTIS
         }
 
         /// <summary>
-        /// Gets Tetris's point coordinates
+        /// 获取指定形状的俄罗斯方块点集坐标，用于网格放置与旋转计算。
         /// </summary>
-        /// <param name="shape"></param>
-        /// <returns></returns>
+        /// <param name="shape">物品的俄罗斯方块形状枚举。</param>
+        /// <returns>该形状对应的网格坐标列表。</returns>
         public List<Vector2Int> GetTetrisPieceShapePos(TetrisPieceShape shape)
         {
             return tetrisItemPointSet_SO.TetrisPieceShapeList[(int)shape].points;
@@ -164,9 +167,10 @@ namespace ChosTIS
         }
 
         /// <summary>
-        /// Programmatic place item
+        /// 程序化将当前选中物品放置到指定容器的网格起始位置。
         /// </summary>
-        /// <param name="tileGridOriginPosition"></param>
+        /// <param name="tileGridOriginPosition">网格起始坐标（左上或定义的原点）。</param>
+        /// <param name="container">目标容器，实现 IInventoryContainer 的实例。</param>
         private void PlaceItem(Vector2Int tileGridOriginPosition, IInventoryContainer container)
         {
             if (container == null) return;

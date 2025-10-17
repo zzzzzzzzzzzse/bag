@@ -3,16 +3,26 @@ using System.Collections.Generic;
 
 namespace ChosTIS.SaveLoadSystem
 {
+    /// <summary>
+    /// 存档槽位面板管理器
+    /// 负责管理存档时间信息的保存和恢复
+    /// </summary>
     public class SaveSlotPanel : Singleton<SaveSlotPanel>, ISaveable
     {
         public string GUID => GetComponent<DataGUID>().guid;
 
+        /// <summary>
+        /// 注册为可保存对象
+        /// </summary>
         private void Start()
         {
             ISaveable saveable = this;
             saveable?.RegisterSaveable();
         }
 
+        /// <summary>
+        /// 获取当前保存时间
+        /// </summary>
         private string SaveTime
         {
             get
@@ -27,6 +37,10 @@ namespace ChosTIS.SaveLoadSystem
             }
         }
 
+        /// <summary>
+        /// 生成保存数据
+        /// </summary>
+        /// <returns>包含保存时间的游戏存档数据</returns>
         public GameSaveData GenerateSaveData()
         {
             GameSaveData saveData = new()
@@ -40,6 +54,10 @@ namespace ChosTIS.SaveLoadSystem
             return saveData;
         }
 
+        /// <summary>
+        /// 恢复数据
+        /// </summary>
+        /// <param name="saveData">要恢复的存档数据</param>
         public void RestoreData(GameSaveData saveData)
         {
 

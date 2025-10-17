@@ -3,11 +3,20 @@ using UnityEngine;
 
 namespace ChosTIS.Utility
 {
+    /// <summary>
+    /// 对象池管理器
+    /// 管理游戏对象的对象池，优化性能，减少频繁创建和销毁
+    /// </summary>
     public class PoolManager : Singleton<PoolManager>
     {
         private Dictionary<string, Queue<GameObject>> objectPool = new();
         private GameObject pool;
 
+        /// <summary>
+        /// 从对象池获取对象
+        /// </summary>
+        /// <param name="prefab">预制体</param>
+        /// <returns>激活的对象</returns>
         public GameObject GetObject(GameObject prefab)
         {
             //Declare the object to be retrieved
@@ -35,6 +44,10 @@ namespace ChosTIS.Utility
             return _object;
         }
 
+        /// <summary>
+        /// 将对象回收到对象池
+        /// </summary>
+        /// <param name="prefab">要回收的对象</param>
         public void PushObject(GameObject prefab)
         {
             string _name = prefab.name.Replace("(Clone)", string.Empty);

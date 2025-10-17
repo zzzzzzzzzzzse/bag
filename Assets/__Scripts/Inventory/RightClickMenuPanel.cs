@@ -3,6 +3,10 @@ using UnityEngine.UI;
 
 namespace ChosTIS
 {
+    /// <summary>
+    /// 右键菜单面板
+    /// 处理物品的右键操作菜单，提供查看、分割、使用等功能
+    /// </summary>
     public class RightClickMenuPanel : MonoBehaviour
     {
         public TetrisItem _currentItem;
@@ -12,6 +16,9 @@ namespace ChosTIS
         [SerializeField] private float distanceThreshold = 150f;
 
 
+        /// <summary>
+        /// 初始化按钮事件监听
+        /// </summary>
         private void Awake()
         {
             CheckBtn.onClick.AddListener(OnCheckBtnClick);
@@ -19,6 +26,9 @@ namespace ChosTIS
             UseBtn.onClick.AddListener(OnUseBtnClick);
         }
 
+        /// <summary>
+        /// 检查鼠标距离，超出阈值时隐藏菜单
+        /// </summary>
         private void Update()
         {
             if (Vector2.Distance(Input.mousePosition, transform.position) > distanceThreshold)
@@ -27,6 +37,9 @@ namespace ChosTIS
             }
         }
 
+        /// <summary>
+        /// 查看按钮点击事件
+        /// </summary>
         private void OnCheckBtnClick()
         {
             Show(false);
@@ -37,6 +50,9 @@ namespace ChosTIS
             ItemInformationPanel.ItemDescription.text = itemDetails.itemDescription;
         }
 
+        /// <summary>
+        /// 分割按钮点击事件
+        /// </summary>
         private void OnSplitBtnClick()
         {
             if (_currentItem == null) return;
@@ -49,6 +65,9 @@ namespace ChosTIS
             Show(false);
         }
 
+        /// <summary>
+        /// 使用按钮点击事件
+        /// </summary>
         private void OnUseBtnClick()
         {
             Show(false);
@@ -56,11 +75,18 @@ namespace ChosTIS
             // Implement your use logic here
         }
 
+        /// <summary>
+        /// 显示或隐藏菜单
+        /// </summary>
+        /// <param name="isClick">是否显示</param>
         public void Show(bool isClick)
         {
             gameObject.SetActive(isClick);
         }
 
+        /// <summary>
+        /// 根据物品类型设置按钮激活状态
+        /// </summary>
         public void SetBtnActive()
         {
             if (_currentItem == null) return;

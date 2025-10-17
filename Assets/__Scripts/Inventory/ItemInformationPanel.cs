@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 namespace ChosTIS
 {
+    /// <summary>
+    /// 物品信息面板：支持拖拽移动、展示图片与文案，并限制在画布范围内。
+    /// </summary>
     public class ItemInformationPanel : MonoBehaviour, IBeginDragHandler, IDragHandler
     {
         public Image itemImage;
@@ -27,6 +30,10 @@ namespace ChosTIS
             Show(false);
         }
 
+        /// <summary>
+        /// 开始拖拽面板：计算拖拽偏移量，用于保持光标与面板位置关系。
+        /// </summary>
+        /// <param name="eventData">指针事件数据。</param>
         public void OnBeginDrag(PointerEventData eventData)
         {
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -37,6 +44,10 @@ namespace ChosTIS
             offset = panelRect.anchoredPosition - localPoint;
         }
 
+        /// <summary>
+        /// 拖拽中：根据屏幕坐标更新面板锚点位置，并限制在画布范围内。
+        /// </summary>
+        /// <param name="eventData">指针事件数据。</param>
         public void OnDrag(PointerEventData eventData)
         {
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -51,11 +62,19 @@ namespace ChosTIS
         }
 
 
+        /// <summary>
+        /// 显示或隐藏信息面板。
+        /// </summary>
+        /// <param name="isShow">为 true 则显示，否则隐藏。</param>
         public void Show(bool isShow)
         {
             gameObject.SetActive(isShow);
         }
 
+        /// <summary>
+        /// 设置面板中的物品图片，并在超出父容器约束时按比例收缩。
+        /// </summary>
+        /// <param name="newSprite">新图片资源。</param>
         public void SetItemImage(Sprite newSprite)
         {
             itemImage.sprite = newSprite;
@@ -76,6 +95,9 @@ namespace ChosTIS
             }
 
         }
+        /// <summary>
+        /// 限制面板位置在画布范围内，避免拖拽导致超出可视区域。
+        /// </summary>
         private void ClampToCanvas()
         {
             Vector3 pos = panelRect.localPosition;

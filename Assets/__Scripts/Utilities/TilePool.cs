@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace ChosTIS
 {
+    /// <summary>
+    /// 瓦片对象池
+    /// 专门用于管理高亮瓦片的对象池，优化性能
+    /// </summary>
     public class TilePool : MonoBehaviour
     {
         [SerializeField] private GameObject tilePrefab;
@@ -10,12 +14,17 @@ namespace ChosTIS
 
         private Queue<GameObject> pool = new Queue<GameObject>();
 
+        /// <summary>
+        /// 初始化对象池
+        /// </summary>
         private void Awake()
         {
             InitializePool();
         }
 
-        // Initialize object pool
+        /// <summary>
+        /// 初始化对象池
+        /// </summary>
         private void InitializePool()
         {
             for (int i = 0; i < initialPoolSize; i++)
@@ -24,7 +33,10 @@ namespace ChosTIS
             }
         }
 
-        // Create a new Tile and add it to the pool
+        /// <summary>
+        /// 创建新的瓦片并添加到池中
+        /// </summary>
+        /// <returns>新创建的瓦片</returns>
         private GameObject CreateNewTile()
         {
             GameObject tile = Instantiate(tilePrefab, transform);
@@ -33,12 +45,15 @@ namespace ChosTIS
             return tile;
         }
 
-        // Retrieve available tiles from the pool
+        /// <summary>
+        /// 从池中获取可用的瓦片
+        /// </summary>
+        /// <returns>激活的瓦片对象</returns>
         public GameObject GetTile()
         {
             if (pool.Count == 0)
             {
-                // Dynamic expansion when the pool is empty
+                // 池为空时动态扩展
                 CreateNewTile();
             }
 
@@ -47,14 +62,19 @@ namespace ChosTIS
             return tile;
         }
 
-        // Return Tile to the Pool
+        /// <summary>
+        /// 将瓦片返回到池中
+        /// </summary>
+        /// <param name="tile">要返回的瓦片</param>
         public void ReturnTile(GameObject tile)
         {
             tile.SetActive(false);
             pool.Enqueue(tile);
         }
 
-        // Empty pool (optional)
+        /// <summary>
+        /// 清空对象池
+        /// </summary>
         public void ClearPool()
         {
             foreach (var tile in pool)

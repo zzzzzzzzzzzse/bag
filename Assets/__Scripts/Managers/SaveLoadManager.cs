@@ -6,6 +6,10 @@ using ChosTIS.Utility;
 
 namespace ChosTIS.SaveLoadSystem
 {
+    /// <summary>
+    /// 存档加载管理器
+    /// 负责管理整个游戏的存档系统，包括保存、加载、删除等操作
+    /// </summary>
     public class SaveLoadManager : Singleton<SaveLoadManager>
     {
         private List<ISaveable> saveableList = new List<ISaveable>();

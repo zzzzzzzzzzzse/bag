@@ -6,6 +6,9 @@ using static ChosTIS.Utilities;
 
 namespace ChosTIS
 {
+    /// <summary>
+    /// 以网格坐标管理物品放置与移除、重叠检测与坐标转换的核心容器。
+    /// </summary>
     public class TetrisItemGrid : MonoBehaviour, IInventoryContainer, IPointerEnterHandler, IPointerExitHandler
     {
         private TetrisItem[,] itemSlot;
@@ -46,17 +49,29 @@ namespace ChosTIS
             InstanceIDManager.Unregister(this);
         }
 
+        /// <summary>
+        /// 指针进入当前网格时，将该网格设为选中用于高亮与放置计算。
+        /// </summary>
+        /// <param name="eventData">指针事件数据。</param>
         public void OnPointerEnter(PointerEventData eventData)
         {
             inventoryManager.selectedTetrisItemGrid = this;
         }
 
+        /// <summary>
+        /// 指针离开当前网格时，清除选中状态以避免误用。
+        /// </summary>
+        /// <param name="eventData">指针事件数据。</param>
         public void OnPointerExit(PointerEventData eventData)
         {
             inventoryManager.selectedTetrisItemGrid = null;
         }
 
-        //Resize Rect
+        /// <summary>
+        /// 初始化网格的 RectTransform 尺寸（按网格宽高与单元尺寸计算）。
+        /// </summary>
+        /// <param name="width">网格列数。</param>
+        /// <param name="height">网格行数。</param>
         private void Initialize(int width, int height)
         {
             Vector2 size = new Vector2(width * tileSizeWidth, height * tileSizeHeight);
@@ -64,13 +79,12 @@ namespace ChosTIS
         }
 
         /// <summary>
-        /// Add items at grid coordinates
+        /// 尝试将物品放置到当前网格的指定坐标，进行边界与占用校验。
         /// </summary>
-        /// <param name="item"></param>
-        /// <param name="posX"></param>
-        /// <param name="posY"></param>
-        /// <param name="overlapItem"></param>
-        /// <returns></returns>
+        /// <param name="item">要放置的物品。</param>
+        /// <param name="posX">目标列坐标。</param>
+        /// <param name="posY">目标行坐标。</param>
+        /// <returns>放置成功返回 true，否则返回 false。</returns>
         public bool TryPlaceTetrisItem(TetrisItem item, int posX, int posY)
         {
             if (BoundryCheck(posX, posY, item.WIDTH, item.HEIGHT) == false) return false;
@@ -80,6 +94,14 @@ namespace ChosTIS
             return true;
         }
 
+        /// <summary>
+        /// 尝试将物品放置到指定坐标，并返回唯一叠加物品用于堆叠；成功后写存档与容器引用。
+        /// </summary>
+        /// <param name="item">要放置的物品引用（成功后置空）。</param>
+        /// <param name="posX">目标列坐标。</param>
+        /// <param name="posY">目标行坐标。</param>
+        /// <param name="overlapItem">输出的唯一重叠物品（用于堆叠），无则为 null。</param>
+        /// <returns>放置成功返回 true，否则返回 false。</returns>
         public bool TryPlaceTetrisItem(ref TetrisItem item, int posX, int posY, ref TetrisItem overlapItem)
         {
             //Determine if the item is out of bounds
@@ -105,6 +127,12 @@ namespace ChosTIS
             return true;
         }
 
+        /// <summary>
+        /// 当目标位置存在同 ID 且可堆叠物品时，执行堆叠与清理逻辑。
+        /// </summary>
+        /// <param name="item">被拖拽物品。</param>
+        /// <param name="overlapltem">已存在且候选堆叠的物品。</param>
+        /// <returns>堆叠成功返回 true，否则返回 false。</returns>
         public bool PlaceOnOverlapItem(TetrisItem item, TetrisItem overlapltem)
         {
             if (Utilities.TetrisItemUtilities.TryStackItems(overlapltem, item))
@@ -131,7 +159,12 @@ namespace ChosTIS
                 return false;
         }
 
-        //Add items according to grid coordinates
+        /// <summary>
+        /// 将物品按形状点集占据网格、设置位置与旋转，并记录持有字典。
+        /// </summary>
+        /// <param name="item">物品实例。</param>
+        /// <param name="posX">列坐标。</param>
+        /// <param name="posY">行坐标。</param>
         public void PlaceTetrisItem(TetrisItem item, int posX, int posY)
         {
             item.transform.SetParent(transform, false);
@@ -160,7 +193,15 @@ namespace ChosTIS
             }
         }
 
-        //Get items by grid coordinates
+        /// <summary>
+        /// 根据旧状态清理网格占用并从持有字典移除该物品，返回被移除物品。
+        /// </summary>
+        /// <param name="toReturn">要移除的物品。</param>
+        /// <param name="x">旧列坐标。</param>
+        /// <param name="y">旧行坐标。</param>
+        /// <param name="oldRotationOffset">旧旋转偏移。</param>
+        /// <param name="tetrisPieceShapePositions">旧形状点集。</param>
+        /// <returns>被移除的物品引用；若传入为空则返回 null。</returns>
         public TetrisItem RemoveTetrisItem(TetrisItem toReturn, int x, int y, Vector2Int oldRotationOffset, List<Vector2Int> tetrisPieceShapePositions)
         {
             if (toReturn == null) return null;
@@ -190,7 +231,14 @@ namespace ChosTIS
             }
         }
 
-        //Checks for overlapping items in the specified location and range and returns overlapItem and false if there are multiple overlapping items
+        /// <summary>
+        /// 检查目标范围内的占用情况，若仅存在一个重叠物品则返回该引用；多个重叠则失败。
+        /// </summary>
+        /// <param name="item">待放置物品。</param>
+        /// <param name="posX">列坐标。</param>
+        /// <param name="posY">行坐标。</param>
+        /// <param name="overlapItem">输出的唯一重叠物品。</param>
+        /// <returns>检查成功（零或一个重叠）返回 true；发现多个重叠返回 false。</returns>
         public bool OverlapCheck(TetrisItem item, int posX, int posY, ref TetrisItem overlapItem)
         {
             foreach (Vector2Int v2i in item.TetrisPieceShapePos)
@@ -219,6 +267,13 @@ namespace ChosTIS
             return true;
         }
 
+        /// <summary>
+        /// 校验目标范围内是否全部为空位，确保可放置。
+        /// </summary>
+        /// <param name="item">待放置物品。</param>
+        /// <param name="posX">列坐标。</param>
+        /// <param name="posY">行坐标。</param>
+        /// <returns>可放置返回 true，否则返回 false。</returns>
         private bool ValidPosCheck(TetrisItem item, int posX, int posY)
         {
             foreach (Vector2Int v2i in item.TetrisPieceShapePos)

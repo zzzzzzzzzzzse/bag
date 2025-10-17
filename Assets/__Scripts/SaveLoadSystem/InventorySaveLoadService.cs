@@ -6,6 +6,10 @@ using static ChosTIS.Utilities;
 
 namespace ChosTIS.SaveLoadSystem
 {
+    /// <summary>
+    /// 库存存档加载服务
+    /// 负责库存系统的数据保存和加载，管理物品的序列化和反序列化
+    /// </summary>
     public class InventorySaveLoadService : Singleton<InventorySaveLoadService>, ISaveable
     {
         [Header("ItemDetails Data")]
@@ -40,6 +44,10 @@ namespace ChosTIS.SaveLoadSystem
             saveable.RegisterSaveable();
         }
 
+        /// <summary>
+        /// 生成保存数据
+        /// </summary>
+        /// <returns>包含库存数据的游戏存档数据</returns>
         public GameSaveData GenerateSaveData()
         {
             GameSaveData saveData = new()
@@ -53,20 +61,27 @@ namespace ChosTIS.SaveLoadSystem
             return saveData;
         }
 
+        /// <summary>
+        /// 恢复数据
+        /// </summary>
+        /// <param name="saveData">要恢复的存档数据</param>
         public void RestoreData(GameSaveData saveData)
         {
             inventoryData_SO.inventoryItemList = saveData.inventoryDict[inventoryData_SO.name];
         }
 
+        /// <summary>
+        /// 处理实例化UI事件
+        /// </summary>
         public void HandleInstantiateUI()
         {
             StartCoroutine(InstantiateInventoryItemUICoroutine());
         }
 
         /// <summary>
-        /// Asynchronous generation of item UI during archive loading
+        /// 异步生成物品UI协程（存档加载时）
         /// </summary>
-        /// <returns></returns>
+        /// <returns>协程迭代器</returns>
         public IEnumerator InstantiateInventoryItemUICoroutine()
         {
             var operations = new Action[] {
@@ -84,6 +99,9 @@ namespace ChosTIS.SaveLoadSystem
             }
         }
 
+        /// <summary>
+        /// 更新槽位物品
+        /// </summary>
         private void UpdateSlotItem()
         {
             foreach (GridItem item in inventoryData_SO.inventoryItemList)

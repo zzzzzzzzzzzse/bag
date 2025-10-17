@@ -2,6 +2,10 @@ using UnityEngine;
 
 namespace ChosTIS
 {
+    /// <summary>
+    /// 槽位布局控制器
+    /// 动态调整槽位和网格面板的大小，根据子元素数量自动调整布局
+    /// </summary>
     public class SlotLayoutController : MonoBehaviour
     {
         public RectTransform slotRect;
@@ -9,6 +13,9 @@ namespace ChosTIS
         private int childCount = 0;
         private bool isRemoved = false;
 
+        /// <summary>
+        /// 每帧检查子元素变化并调整布局
+        /// </summary>
         private void Update()
         {
             if (gridPanelRect.childCount < childCount) isRemoved = true;
@@ -28,6 +35,9 @@ namespace ChosTIS
             }
         }
 
+        /// <summary>
+        /// 设置槽位和网格面板的大小
+        /// </summary>
         public void SetUp()
         {
             gridPanelRect.sizeDelta = new Vector2(
@@ -36,6 +46,11 @@ namespace ChosTIS
             slotRect.sizeDelta = new Vector2(slotRect.rect.width, gridPanelRect.rect.height + 10f);
         }
 
+        /// <summary>
+        /// 检查网格面板是否有子元素变化
+        /// </summary>
+        /// <param name="gridPanel">网格面板</param>
+        /// <returns>是否有变化</returns>
         private bool HasGrid(RectTransform gridPanel)
         {
             //if (gridPanel.childCount == 0) return false;

@@ -5,6 +5,11 @@ using UnityEngine.UI;
 
 namespace ChosTIS
 {
+    /// <summary>
+    /// 库存高亮显示系统
+    /// 负责在拖拽物品时显示网格高亮效果，提供视觉反馈
+    /// 使用对象池管理高亮瓦片，支持不同颜色表示不同状态
+    /// </summary>
     public class InventoryHighlight : MonoBehaviour
     {
         [SerializeField] RectTransform highlighter;
@@ -31,6 +36,9 @@ namespace ChosTIS
             }
         }
 
+        /// <summary>
+        /// 清理所有高亮瓦片，回收到对象池
+        /// </summary>
         private void ClearTiles()
         {
             foreach (var tile in activeTiles)
@@ -40,6 +48,10 @@ namespace ChosTIS
             activeTiles.Clear();
         }
 
+        /// <summary>
+        /// 设置高亮显示器的大小
+        /// </summary>
+        /// <param name="targetItem">目标物品</param>
         public void SetSize(TetrisItem targetItem)
         {
             Vector2 size = new Vector2();
@@ -48,23 +60,44 @@ namespace ChosTIS
             highlighter.sizeDelta = size;
         }
 
+        /// <summary>
+        /// 显示或隐藏高亮显示器
+        /// </summary>
+        /// <param name="b">是否显示</param>
         public void Show(bool b)
         {
             highlighter.gameObject.SetActive(b);
         }
 
+        /// <summary>
+        /// 设置高亮显示器的父对象
+        /// </summary>
+        /// <param name="targetGrid">目标网格</param>
         public void SetParent(TetrisItemGrid targetGrid)
         {
             highlighter.SetParent(targetGrid.GetComponent<RectTransform>());
             highlighter.transform.SetAsFirstSibling();
         }
 
+        /// <summary>
+        /// 设置高亮显示器的位置
+        /// </summary>
+        /// <param name="targetGrid">目标网格</param>
+        /// <param name="targetItem">目标物品</param>
+        /// <param name="posX">X坐标</param>
+        /// <param name="posY">Y坐标</param>
         public void SetPosition(TetrisItemGrid targetGrid, TetrisItem targetItem, int posX, int posY)
         {
             Vector2 pos = targetGrid.CalculateHighlighterPosition(posX, posY);
             highlighter.localPosition = pos;
         }
 
+        /// <summary>
+        /// 设置高亮瓦片的颜色，根据位置状态显示不同颜色
+        /// </summary>
+        /// <param name="tile">高亮瓦片</param>
+        /// <param name="targetGrid">目标网格</param>
+        /// <param name="tileOnGridPos">网格位置</param>
         private void SetColor(GameObject tile, TetrisItemGrid targetGrid, Vector2Int tileOnGridPos)
         {
             TetrisItem tetrisItem = targetGrid.GetTetrisItem(tileOnGridPos.x, tileOnGridPos.y);
