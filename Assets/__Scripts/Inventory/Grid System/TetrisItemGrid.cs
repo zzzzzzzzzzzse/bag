@@ -340,7 +340,7 @@ namespace ChosTIS
         {
             return new Vector2(
                 gridX * tileSizeWidth + ghost.RotationOffset.x * tileSizeWidth,
-                -gridY * tileSizeHeight - ghost.RotationOffset.y * tileSizeWidth
+                -gridY * tileSizeHeight - ghost.RotationOffset.y * tileSizeHeight
             );
         }
 
