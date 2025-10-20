@@ -31,9 +31,12 @@ namespace ChosTIS
         private Vector2Int oldPosition;
         private int selectedItemIndex;
 
+        /// <summary>
+        /// 每帧更新，处理输入事件和物品操作
+        /// </summary>
         private void Update()
         {
-            //[Debug] Dynamically add items randomly
+            // 动态添加物品（调试用）
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 if (selectedItemIndex >= itemDataList_SO.itemDetailsList.Count)
@@ -49,14 +52,14 @@ namespace ChosTIS
                 ++selectedItemIndex;
             }
 
-            //Rotating item
+            // 旋转物品
             if (Input.GetKeyDown(KeyCode.R))
             {
                 oldPosition = new();
                 RotateItemGhost();
             }
 
-            //Pick up item UI location
+            // 更新选中物品的UI位置
             if (selectedTetrisItem) selectedTetrisItem.transform.position = Input.mousePosition;
 
             if (Input.GetMouseButtonDown(0))
@@ -64,7 +67,7 @@ namespace ChosTIS
                 TetrisItemGrid tetrisItemGrid = GetGridUnderMouse();
                 if (tetrisItemGrid != null)
                 {
-                    //Gets the grid coordinates of the current mouse position in the grid and prints it to the console
+                    // 获取当前鼠标位置在网格中的坐标
                     Vector2Int tileGridOriginPosition = GetTileGridOriginPosition(tetrisItemGrid);
                     if (selectedTetrisItem == null)
                     {
@@ -93,6 +96,9 @@ namespace ChosTIS
             return tetrisItemPointSet_SO.TetrisPieceShapeList[(int)shape].points;
         }
 
+        /// <summary>
+        /// 旋转物品幽灵
+        /// </summary>
         private void RotateItemGhost()
         {
             if (tetrisItemGhost.ItemDetails == null) return;
@@ -100,9 +106,9 @@ namespace ChosTIS
         }
 
         /// <summary>
-        /// Gets the origin grid coordinates of TetrisItemGhost, and returns the mouse location grid coordinates if the item is not picked up
+        /// 获取物品幽灵的网格原点坐标，如果物品未被拾取则返回鼠标位置网格坐标
         /// </summary>
-        /// <returns></returns>
+        /// <returns>网格坐标</returns>
         public Vector2Int GetGhostTileGridOriginPosition()
         {
             if (selectedTetrisItemGrid == null) return new Vector2Int();
@@ -119,9 +125,10 @@ namespace ChosTIS
         }
 
         /// <summary>
-        /// Gets the origin grid coordinates of the TetrisItem and returns the mouse location grid coordinates if the item is not picked up
+        /// 获取俄罗斯方块物品的网格原点坐标，如果物品未被拾取则返回鼠标位置网格坐标
         /// </summary>
-        /// <returns></returns>
+        /// <param name="tetrisItemGrid">目标网格</param>
+        /// <returns>网格坐标</returns>
         private Vector2Int GetTileGridOriginPosition(TetrisItemGrid tetrisItemGrid)
         {
             Vector2 origin = Input.mousePosition;
@@ -134,6 +141,10 @@ namespace ChosTIS
             return tileGridPosition;
         }
 
+        /// <summary>
+        /// 处理高亮显示
+        /// </summary>
+        /// <param name="isShow">是否显示高亮</param>
         private void HandleHighlight(bool isShow)
         {
             Vector2Int positionOnGrid = GetGhostTileGridOriginPosition();
@@ -155,9 +166,12 @@ namespace ChosTIS
         }
 
         /// <summary>
-        /// Drag Drop to Place Tetris Item
+        /// 拖拽放置俄罗斯方块物品
         /// </summary>
-        /// <param name="tileGridOriginPosition"></param>
+        /// <param name="tileGridOriginPosition">网格原点位置</param>
+        /// <param name="tetrisItem">要放置的物品</param>
+        /// <param name="targetGrid">目标网格</param>
+        /// <param name="fromSlot">来源槽位</param>
         public void PlaceGhostItem(Vector2Int tileGridOriginPosition, TetrisItem tetrisItem, TetrisItemGrid targetGrid, InventorySlot fromSlot)
         {
             if (targetGrid == null) return;
@@ -185,11 +199,12 @@ namespace ChosTIS
         }
 
         /// <summary>
-        /// Place sub items in the activity backpack, nested items are not allowed in inventory
+        /// 在活动背包中放置子物品，库存中不允许嵌套物品
         /// </summary>
-        /// <param name="parentItem"></param>
-        /// <param name="targetGrid"></param>
-        /// <returns></returns>
+        /// <param name="parentItem">父物品</param>
+        /// <param name="targetGrid">目标网格</param>
+        /// <param name="fromSlot">来源槽位</param>
+        /// <returns>协程迭代器</returns>
         private IEnumerator PlaceChildItem(TetrisItem parentItem, TetrisItemGrid targetGrid, InventorySlot fromSlot)
         {
             if (!parentItem.TryGetItemComponent<GridPanelComponent>(out GridPanelComponent gridPanel)) yield break;
@@ -242,6 +257,11 @@ namespace ChosTIS
             }
         }
 
+        /// <summary>
+        /// 重置父物品到原槽位
+        /// </summary>
+        /// <param name="parentItem">父物品</param>
+        /// <param name="fromSlot">来源槽位</param>
         private void ResetParent(TetrisItem parentItem, InventorySlot fromSlot)
         {
             if (parentItem.CurrentInventoryContainer as InventorySlot == null)
@@ -252,6 +272,11 @@ namespace ChosTIS
             }
         }
 
+        /// <summary>
+        /// 创建新的可堆叠物品
+        /// </summary>
+        /// <param name="itemID">物品ID</param>
+        /// <returns>堆叠组件</returns>
         public StackableComponent CreateNewStackableItem(int itemID)
         {
             if (selectedTetrisItem) return null;
@@ -265,6 +290,10 @@ namespace ChosTIS
             return stackableComponent;
         }
 
+        /// <summary>
+        /// 按顺序创建物品
+        /// </summary>
+        /// <param name="selectedItemIndex">选中的物品索引</param>
         private void CreateItemInOrder(int selectedItemIndex)
         {
             if (selectedTetrisItem) return;
@@ -276,6 +305,10 @@ namespace ChosTIS
             selectedTetrisItem.Initialize(itemDataList_SO.itemDetailsList[selectedItemIndex], null, selectedTetrisItemGrid);
         }
 
+        /// <summary>
+        /// 获取鼠标下方的网格
+        /// </summary>
+        /// <returns>网格组件，如果没有则返回null</returns>
         private TetrisItemGrid GetGridUnderMouse()
         {
             PointerEventData eventData = new PointerEventData(EventSystem.current)
